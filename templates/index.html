@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Project Miraj - Zee5 Piracy Tracker</title>
+    <style>
+        body { background: #0a0a0a; color: #f0f0f0; font-family: sans-serif; }
+        .glass { background: #1a1a1a; border-radius: 12px; padding: 25px; border: 1px solid #333; margin-bottom: 25px; }
+        .btn-purple { background: #8230c6; color: white; font-weight: bold; }
+        .btn-purple:hover { background: #6a25a3; color: white; }
+        .table { color: #ddd; border-color: #444; }
+    </style>
+</head>
+<body class="container py-5">
+    <div class="text-center mb-5">
+        <h1 style="letter-spacing: 8px; font-weight: 900; color: #8230c6;">PROJECT MIRAJ</h1>
+        <p id="timer" class="text-muted"></p>
+    </div>
+
+    <div class="glass">
+        <form action="/generate" method="POST">
+            <div id="input-fields">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-5"><input type="text" name="title[]" class="form-control bg-dark text-white border-secondary" placeholder="Content Title (e.g. Gadar 2)"></div>
+                    <div class="col-md-5"><input type="url" name="url[]" class="form-control bg-dark text-white border-secondary" placeholder="ZEE5 Original URL"></div>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="button" onclick="addMore()" class="btn btn-outline-light btn-sm">+ Add More</button>
+                <button type="submit" class="btn btn-purple flex-grow-1">Generate Tracking URLs</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="glass">
+        <h3>Link Management</h3>
+        <div class="table-responsive">
+            <table class="table">
+                <thead><tr><th>Sr</th><th>Title</th><th>X (Twitter)</th><th>Telegram</th><th>Facebook</th></tr></thead>
+                <tbody>
+                    {% for link in links %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ link.title }}</td>
+                        <td><small class="text-info">/t/{{ link.id }}/X</small></td>
+                        <td><small class="text-info">/t/{{ link.id }}/TG</small></td>
+                        <td><small class="text-info">/t/{{ link.id }}/FB</small></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="glass">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3>Live Analytics</h3>
+            <div>
+                <a href="/export" class="btn btn-sm btn-success">Export CSV</a>
+                <button onclick="location.reload()" class="btn btn-sm btn-outline-info">Refresh</button>
+            </div>
+        </div>
+        <table class="table table-striped">
+            <thead><tr><th>Title</th><th>Platform</th><th>Time</th><th>Device</th><th>IP Address</th></tr></thead>
+            <tbody>
+                {% for track in tracks %}
+                <tr>
+                    <td>{{ track.title }}</td>
+                    <td><span class="badge bg-primary">{{ track.platform }}</span></td>
+                    <td>{{ track.dt }}</td>
+                    <td>{{ track.device }}</td>
+                    <td>{{ track.ip }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function addMore() {
+            const div = document.createElement('div');
+            div.className = 'row g-3 mb-3';
+            div.innerHTML = '<div class="col-md-5"><input type="text" name="title[]" class="form-control bg-dark text-white border-secondary" placeholder="Title"></div>' +
+                            '<div class="col-md-5"><input type="url" name="url[]" class="form-control bg-dark text-white border-secondary" placeholder="URL"></div>';
+            document.getElementById('input-fields').appendChild(div);
+        }
+        setInterval(() => { document.getElementById('timer').innerText = new Date().toLocaleString(); }, 1000);
+    </script>
+</body>
+</html>
